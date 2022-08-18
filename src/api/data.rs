@@ -316,8 +316,59 @@ impl PinByFile {
     self
   }
 
-  /// Consumes the PinByHash and returns a new PinByHash with pinata options set.
+  /// Consumes the PinByFile and returns a new PinByFile with pinata options set.
   pub fn set_options(mut self, options: PinOptions) -> PinByFile {
+    self.pinata_option = Some(options);
+    self
+  }
+}
+
+
+/// Request object to pin some binary content
+/// ```
+pub struct PinByBinary {
+  pub(crate) file_name: String,
+  pub(crate) file_content: Vec<u8>,
+  pub(crate) pinata_metadata: Option<PinMetadata>,
+  pub(crate) pinata_option: Option<PinOptions>,
+}
+
+impl PinByBinary {
+  /// Create a PinByBinary object
+  pub fn new(file_name: String, file_content: Vec<u8>) -> Self {
+    PinByBinary {
+      file_name,
+      file_content,
+      pinata_metadata: None,
+      pinata_option: None,
+    }
+  }
+
+  /// Consumes the current PinByBinary and returns a new PinByBinary with keyvalues metadata set
+  pub fn set_metadata(mut self, keyvalues: MetadataKeyValues) -> Self {
+    self.pinata_metadata = Some(PinMetadata {
+      name: None,
+      keyvalues,
+    });
+    self
+  }
+
+  /// Consumes the current PinByBinary and returns a new PinByBinary with keyvalues metadata set
+  pub fn set_metadata_with_name<IntoStr>(
+    mut self, name: IntoStr,
+    keyvalues: MetadataKeyValues
+  ) -> Self
+    where IntoStr: Into<String>
+  {
+    self.pinata_metadata = Some(PinMetadata {
+      name: Some(name.into()),
+      keyvalues,
+    });
+    self
+  }
+
+  /// Consumes the PinByBinary and returns a new PinByBinary with pinata options set.
+  pub fn set_options(mut self, options: PinOptions) -> Self {
     self.pinata_option = Some(options);
     self
   }
