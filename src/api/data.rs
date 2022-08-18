@@ -335,9 +335,9 @@ pub struct PinByBinary {
 
 impl PinByBinary {
   /// Create a PinByBinary object
-  pub fn new(file_name: String, file_content: Vec<u8>) -> Self {
+  pub fn new<S: Into<String>>(file_name: S, file_content: Vec<u8>) -> Self {
     PinByBinary {
-      file_name,
+      file_name: file_name.into(),
       file_content,
       pinata_metadata: None,
       pinata_option: None,
