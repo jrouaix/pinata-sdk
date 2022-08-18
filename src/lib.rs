@@ -231,6 +231,30 @@ impl PinataApi {
     self.parse_result(response).await
   }
 
+  /// Pin some binary content to Pinata's IPFS nodes.
+  pub async fn pin_bin(&self, pin_data: PinByBinary) -> Result<PinnedObject, ApiError> {
+    let mut form = Form::new();
+
+    let file_name = pin_data.file_name;
+    let part = Part::bytes(pin_data.file_content);
+    form = form.part("file", part.file_name(file_name));
+          
+    if let Some(metadata) = pin_data.pinata_metadata {
+      form = form.text("pinataMetadata", serde_json::to_string(&metadata).unwrap());
+    }
+    
+    if let Some(option) = pin_data.pinata_option {
+      form = form.text("pinataOptions", serde_json::to_string(&option).unwrap());
+    }
+    
+    let response = self.client.post(&api_url("/pinning/pinFileToIPFS"))
+      .multipart(form)
+      .send()
+      .await?;
+
+    self.parse_result(response).await
+  }
+
   /// Unpin content previously uploaded to the Pinata's IPFS nodes.
   pub async fn unpin(&self, hash: &str) -> Result<(), ApiError> {
     let response = self.client.delete(&api_url(&format!("/pinning/unpin/{}", hash)))
