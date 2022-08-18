@@ -93,6 +93,7 @@ mod utils;
 mod errors;
 
 /// API struct. Exposes functions to interact with the Pinata API
+#[derive(Clone)]
 pub struct PinataApi {
   client: Client,
 }
